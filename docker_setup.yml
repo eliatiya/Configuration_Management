@@ -1,0 +1,102 @@
+---
+- hosts: _Ansible
+  become: yes
+  tasks:
+    - name: create directory if they don't exist
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: root
+        group: root
+        mode: 0775
+      loop:
+        - ~/opsschool
+        - ~/opsschool/ansible
+
+    - name: create user opsschool
+      ansible.builtin.user:
+        name: opsschool
+        password: "{{ 'password' | password_hash('sha512', '0p$Sch00l') }}"
+        state: "present"
+        shell: "/bin/bash"
+        system: false
+        create_home: true
+        home: "/home/opsschool"
+
+    - name: Update apt cache
+      apt: update_cache=yes cache_valid_time=3600
+
+    - name: Upgrade all apt packages
+      apt: upgrade=dist
+
+    - name: Install dependencies
+      apt:
+        name: "{{ packages }}"
+        state: present
+        update_cache: yes
+      vars:
+        packages:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - software-properties-common
+        - gnupg-agent
+
+    - name: Add an apt signing key for Docker
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add apt repository for stable version
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
+    - name: Install Docker
+      apt:
+        name: "{{ packages }}"
+        state: present
+        update_cache: yes
+      vars:
+        packages:
+        - python3-docker
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+
+    - name: Add user to docker group
+      user:
+        name: "ubuntu"
+        group: docker
+      notify: Restart docker
+    - name: deploy nginx docker container
+      docker_container:
+        image: nginx:stable
+        name: nginx
+        state: started
+        auto_remove: true
+        ports:
+          - "8080:80"
+    - name: create file with content "I am a text file I exist on the nodes"
+      copy:
+        dest: "/home/ubuntu/textfile.txt"
+        content: |
+          I am a text file I exist on the nodes
+
+    - name: add file to .tar.gz archive
+      archive:
+        path: /home/ubuntu/textfile.txt
+        dest: /home/ubuntu/my_archive.tar.gz
+        format: gz
+        force_archive: true
+        remove: yes
+    - name: download the result of http://icanhazip.com
+      get_url:
+        url: http://icanhazip.com
+        dest: /home/ubuntu
+
+  handlers:
+    - name: Restart docker
+      service:
+        name: docker.service
+        state: restarted

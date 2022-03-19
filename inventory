@@ -1,0 +1,10 @@
+node0 ansible_host=172.31.89.48
+node1 ansible_host=172.31.86.162
+
+[web]
+node0
+node1
+
+[web:vars]
+ansible_user=ubuntu
+ansible_ssh_private_key=~/.ssh/ansible_key_8.pem
