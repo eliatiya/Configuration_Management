@@ -1,0 +1,17 @@
+---
+
+os_user_ubuntu: "ubuntu"
+os_user_redhat: "ec2-user"
+
+nginx_container_name: 'nginx'
+nginx_docker_tag: '1.12.2'
+nginx_exposed_ports:
+  - '80'
+nginx_published_ports:
+  - '8080:80'
+debian_docker_name:
+  - "ubuntu"
+
+redHat_docker_name:
+  - "ec2-user"
+

@@ -1,0 +1,30 @@
+---
+# vars file for install_docker
+
+packages_debian:
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - software-properties-common
+  - gnupg-agent
+  - python3
+  - python3-pip
+  - python3-docker
+
+packages_redHat:
+  - python3
+  - python3-pip
+  - curl
+  - yum-utils
+  - device-mapper-persistent-data
+  - lvm2
+
+debian_url_key: https://download.docker.com/linux/ubuntu/gpg
+redhat_url_key: https://download.docker.com/linux/centos/gpg
+
+debian_repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+redHat_repo: https://download.docker.com/linux/centos/$releasever/$basearch/stable
+docker_packages:
+  - docker-ce
+  - docker-ce-cli
+  - containerd.io

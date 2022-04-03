@@ -1,0 +1,16 @@
+---
+- name: ubuntu install
+  hosts: _Ansible_ubuntu
+  become: true
+  remote_user: ubuntu 
+  roles:
+    - {role: install_docker}
+
+
+- name: redhat install      
+  hosts: _Ansible_redhat
+  become: true
+  remote_user: ec2-user
+  roles:
+    - {role: install_docker}
+

@@ -1,0 +1,8 @@
+---
+- name: Restart docker
+  service:
+    name: "{{ item }}"
+    with_items:
+      - containerd.service      
+      - docker.service
+    state: restarted
